@@ -2,8 +2,8 @@
 Import-Module AWSPowerShell -Force
 Import-Module AWSLambdaPSCore -Force
 
-$accesKey = 'AKIA4GYYM57TW4KQK5HW'
-$secretKey = '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'
+$accesKey = ''
+$secretKey = ''
 
 Initialize-AWSDefaultConfiguration -AccessKey $accesKey -SecretKey $secretKey -Region us-east-1
 

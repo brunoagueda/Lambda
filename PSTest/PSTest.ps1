@@ -6,9 +6,14 @@ Write-Host "Run script"
 
 #Write-Host "Env var: "$env:build_message
 
-Write-Host "Env var: "$env:mensagem
+Write-Host "User: "$env:runnerUser
 
-#Write-Host (Get-ChildItem -Path Env:).name
+Write-Host "Hostname: "$env:runnerUser
+
+Write-Host $LambdaContext.AwsRequestId
+
+Write-Host $LambdaContext.FunctionName
 
 Write-Host "Script finished"
 
+#Write-CPJobSuccessResult -JobId $LambdaContext.AwsRequestId

@@ -2,8 +2,10 @@
 Import-Module AWSPowerShell -Force
 Import-Module AWSLambdaPSCore -Force
 
-$accesKey = ''
-$secretKey = ''
+$creds = Import-Csv ..\creds.txt
+
+$accesKey = $creds.accesKey
+$secretKey = $creds.secretKey
 
 Initialize-AWSDefaultConfiguration -AccessKey $accesKey -SecretKey $secretKey -Region us-east-1
 

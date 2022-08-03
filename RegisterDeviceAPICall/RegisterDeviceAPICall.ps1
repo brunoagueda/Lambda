@@ -1,19 +1,24 @@
 # PowerShell script file to be executed as a AWS Lambda function. 
 
 
-#region API Variables
-$runnerUser = $env:runnerUser
-$runnerDevice = $env:runnerDevice
+#region API Variables #######################################################################################
 
+# running variables
+#$runnerUser = $env:runnerUser
+#$runnerDevice = $env:runnerDevice
+
+# test variables
 $runnerUser = "bruno.runner"
-$runnerDevice = $env:runnerDevice
+$runnerDevice = "EC2AMAZ-23QLTMK"
 
 $url = "https://itau-sandbox.cloud.automationanywhere.digital/"
 $userAA = "bruno.creator"
 $password = "Agued@#175"
-#endregion
+#endregion #######################################################################################
 
-#region Authentication API
+
+
+#region Authentication API #######################################################################################
 $data = @{
     "username" = $userAA
     "password" = $password
@@ -22,9 +27,11 @@ $data = @{
 $authEndpoint = $url + "v1/authentication"
 
 $token = (Invoke-RestMethod -Method Post -Uri $authEndpoint -Body $data).token
-#endregion
+#endregion #######################################################################################
 
-#region Get runner user ID
+
+
+#region Get runner user ID #######################################################################################
 $userEndpoint = $url + "v1/usermanagement/users/list"
 
 $header = @{
@@ -44,10 +51,12 @@ $body = @{
 
 $userId = (Invoke-RestMethod -Method Post -Uri $userEndpoint -Headers $header -Body $body).list.id
 
-#endregion
+#endregion #######################################################################################
 
-#region Get runner device ID
-$deviceEndpoint = $url + "v1/usermanagement/users/list"
+
+
+#region Get runner device ID #######################################################################################
+$deviceEndpoint = $url + "v2/devices/list"
 
 $header = @{
     "X-Authorization" = $token
@@ -56,20 +65,21 @@ $header = @{
 
 
 $body = @{
-    
     "filter" = @{
         "operator" = "substring"
-        "field"    = "username"
-        "value"    = $runnerUser
+        "field"   = "hostName"
+        "value" = $runnerDevice
     }
 } | ConvertTo-Json
 
-$userId = (Invoke-RestMethod -Method Post -Uri $userEndpoint -Headers $header -Body $body).list.id
+$deviceId = (Invoke-RestMethod -Method Post -Uri $deviceEndpoint -Headers $header -Body $body).list.id
 
-#endregion
+#endregion #######################################################################################
 
-#region Bind user to device
-$endpoint2 = $url + "v1/devices/runasusers/default"
+
+
+#region Bind user to device #######################################################################################
+$registerEndpoint = $url + "v1/devices/runasusers/default"
 
 $header = @{
         "X-Authorization" = $token
@@ -79,10 +89,10 @@ $header = @{
 
 $body = @(
     @{
-        "deviceId" = 140
-        "userId" = 420
+        "deviceId" = $deviceId
+        "userId" = $userId
     }
 )
 
-Invoke-RestMethod -Method Post -Uri $endpoint2 -Headers $header -Body ($body | ConvertTo-Json)
-#endregion
+Invoke-RestMethod -Method Post -Uri $registerEndpoint -Headers $header -Body ($body | ConvertTo-Json)
+#endregion #######################################################################################
